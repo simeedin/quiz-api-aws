@@ -1,0 +1,91 @@
+service: quiz-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: simeEdin
+  region: eu-north-1
+  iam:
+    role: arn:aws:iam::239511534325:role/school-role
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+functions:
+  userSignup:
+    handler: functions/userSignup/index.handler
+    events:
+    - httpApi:
+        path: '/api/user/signup'
+        method: POST
+  userLogin:
+    handler: functions/userLogin/index.handler
+    events:
+    - httpApi:
+        path: '/api/user/login'
+        method: POST
+  postQuiz:
+    handler: functions/postQuiz/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: POST
+  getQuizzes:
+    handler: functions/getQuizzes/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: GET
+  postQuestion:
+    handler: functions/postQuestion/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz/question'
+        method: POST
+  deleteQuiz:
+    handler: functions/deleteQuiz/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: DELETE
+  getQuizQuestions:
+    handler: functions/getQuizQuestions/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz/question'
+        method: GET
+  postScore:
+    handler: functions/postScore/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz/highscore'
+        method: POST
+  getHighScore:
+    handler: functions/getHighScore/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz/highscore'
+        method: GET
+
+
+resources:
+    Resources: 
+        quizDb:
+            Type: AWS::DynamoDB::Table
+            Properties: 
+                TableName: quiz-db
+                AttributeDefinitions:
+                    - AttributeName: userName
+                      AttributeType: S
+                    - AttributeName: itemId
+                      AttributeType: S    
+                KeySchema:
+                    - AttributeName: userName
+                      KeyType: HASH
+                    - AttributeName: itemId
+                      KeyType: RANGE    
+                BillingMode: PAY_PER_REQUEST                                
